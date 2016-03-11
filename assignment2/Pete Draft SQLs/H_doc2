@@ -1,0 +1,5 @@
+
+  CREATE VIEW doc2 AS
+  SELECT * FROM frequency
+  WHERE docid = '17035_txt_earn';
+

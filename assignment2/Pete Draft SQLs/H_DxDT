@@ -1,0 +1,6 @@
+
+  SELECT H_D.docid, H_DT.term, SUM(H_D.[SUM(doc1.count * doc2.count)]*H_DT.[SUM(doc1.count * doc2.count)])
+  FROM H_D, H_DT
+  WHERE H_D.term = H_DT.term
+  GROUP BY H_D.docid, H_DT.term;
+  

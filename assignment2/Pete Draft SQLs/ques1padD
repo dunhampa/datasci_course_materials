@@ -1,0 +1,8 @@
+SELECT DISTINCT count(*) FROM (
+  SELECT docid FROM frequency
+  WHERE  term LIKE 'law'
+  UNION 
+  SELECT docid FROM frequency
+  WHERE term LIKE 'legal'
+) x;
+

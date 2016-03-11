@@ -1,0 +1,8 @@
+SELECT COUNT(*) FROM (
+  SELECT *,
+  1.0 as uni
+  FROM frequency
+  GROUP BY docid
+  HAVING SUM(uni) >300
+) x;
+

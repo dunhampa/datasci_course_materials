@@ -1,0 +1,6 @@
+  CREATE VIEW H_D AS
+  SELECT doc1.docid, doc2.term, SUM(doc1.count * doc2.count)
+  FROM doc1, doc2
+  WHERE doc1.term =doc2.term
+  GROUP BY doc1.docid, doc2.term;
+  

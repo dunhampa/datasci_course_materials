@@ -1,0 +1,8 @@
+SELECT docid,  MAX(SUM(new)) FROM (
+  SELECT frequency.docid, keywords.term, SUM(frequency.count * keywords.count) AS new
+  FROM keywords, frequency
+  WHERE frequency.term = keywords.term
+  GROUP BY frequency.docid, keywords.term
+  )
+GROUP BY docid
+ORDER BY docid;

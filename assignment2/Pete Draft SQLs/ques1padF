@@ -1,0 +1,15 @@
+  CREATE VIEW word1 AS
+  SELECT *
+  FROM frequency
+  WHERE term = 'transactions';
+
+  CREATE VIEW word2 AS
+  SELECT *
+  FROM frequency
+  WHERE term='world';
+
+  SELECT  COUNT(*) FROM (
+  SELECT DISTINCT * FROM word1,word2
+  WHERE word1.docid=word2.docid
+) x;
+  

@@ -1,0 +1,5 @@
+
+  CREATE VIEW doc1 AS
+  SELECT * FROM frequency
+  WHERE docid = '10080_txt_crude';
+
