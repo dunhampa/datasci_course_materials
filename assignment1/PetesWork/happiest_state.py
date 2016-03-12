@@ -19,14 +19,7 @@ class stateRate:
     def ave(self):
         self.aveHap=float(self.sum)/float(self.count)
 
-
-
-
-
-
-def hw():
-    print 'Hello, world!'
-    
+#Using a static dict so no external resources are needed    
 abbrev = {
         'AK': 'Alaska',
         'AL': 'Alabama',
@@ -88,59 +81,69 @@ abbrev = {
 }
 
 
-def lines(fp):
-    print str(len(fp.readlines()))
-
 def main():
-    sent_file = open(sys.argv[1])#open("/Volumes/SDCX/Dropbox/102_COURSERA MOOC/05_Data Science At Scale/Assign1Mac/AFINN-111.txt")#
-    tweet_file = open(sys.argv[2])#("/Volumes/SDCX/Dropbox/102_COURSERA MOOC/05_Data Science At Scale/Assign1Mac/output.txt")#open
+    
+    sent_file = open(sys.argv[1])
+    tweet_file = open(sys.argv[2])
     
     state_dict={}
    
-    sent_score=0    
+    sent_score=0 
+    
+    scores=init_sent_dict(sent_file)   
 
-    for each_line in fileinput.input(sys.argv[2]):#"/Volumes/SDCX/Dropbox/102_COURSERA MOOC/05_Data Science At Scale/Assign1Mac/output.txt"):
+    for each_line in tweet_file:#fileinput.input(sys.argv[2]):
+      
       myobj=(json.loads(each_line))
       
-      scorefound=0
+      scorefound=0 #this is a conditional within loop, to iterate through each state
+      
+      #Nested if statements first determine if tweet has the data neededed
       if 'user' in myobj and 'text' in myobj:
          if 'location' in myobj['user']:
             foundlocation= myobj['user']['location']
             if foundlocation is not None:
-               for STabr, state in abbrev.iteritems():
-                    STabrB="\\b"+STabr+"\\b"
+                
+               #For each state pull the value and add boundaries for regex
+               for STabr, state in abbrev.iteritems():#"STabr" is the key, state is the value
+                    STabrB="\\b"+STabr+"\\b" #adding \b on each side, for regex this is a boundary (whole words only)
                     state="\\b"+state+"\\b"
+                    
+                    #Checks if state abbreviation or state full word is in the location of tweets
                     if re.search(STabrB,foundlocation) or re.search(state,foundlocation):
-                       #print STabr
-                       if scorefound==0:
+                       
+                       if scorefound==0: #this bypasses loop, to exit once state if found (score calculated once if more than one state location)
                           tweet=(myobj['text'])
                           words=tweet.split()
                           sent_score=0
        
                           for each_word in words: 
-                             sent_score= get_sent_score(each_word)+sent_score
+                             sent_score= get_sent_score(each_word,scores)+sent_score
                           scorefound=1 
                        update_state(STabr, state_dict, sent_score)       
+    
+    
     maximum=0.0001
     maxAbr=""                                          
     for key,state in state_dict.iteritems():  
        state.ave()
-       #print "AVERAGES:"
-       #print "----"
-       #print key
-       #print state.count
-       #print state.sum
-       #print state.aveHap
-       #print "----"
+       
+       #debug print only
+       state_print_debug(key,state)
+       
        aveHaps=float(state.sum)/float(state.count)
+       
        if aveHaps>maximum:
-           #print key
-           #print aveHaps
            maximum=aveHaps
            maxAbr=key
-    #print "MAX:"                                                
-    print maxAbr
-    #print maximum
+                                                   
+    print maxAbr#Print the happiest state abbreviation
+    
+
+
+# Updates state dictionary
+# If state does not exist as a key, key is created
+# Then score is added key and count is incremented
 
 def update_state(stateAbbrev, state_dict, score):
                            
@@ -149,26 +152,14 @@ def update_state(stateAbbrev, state_dict, score):
       state_obj=stateRate()
       state_dict[stateAbbrev]=state_obj
   
-   state_dict[stateAbbrev].incre()#count is one
+   state_dict[stateAbbrev].incre()
    state_dict[stateAbbrev].add(score)
-   #print stateAbbrev 
-   #print state_dict[stateAbbrev].sum
+
                
-     
 
+# Returns sentiment score for word
 
-
-
-
-def get_sent_score(word):
-  # afinnfile = open("AFINN-111.txt")
-   afinnfile=open(sys.argv[1])
-   scores = {} # initialize an empty dictionary
-
-   for line in afinnfile:
-     term, score  = line.split("\t")
-     # The file is tab-delimited. "\t" means "tab character"
-     scores[term] = int(score)  # Convert the score to an integer.
+def get_sent_score(word,scores):
   
    if word in scores:
       score=scores[word]
@@ -177,6 +168,28 @@ def get_sent_score(word):
 
    return score
 
+#Returns a dictionary from the sentiment file
+
+def init_sent_dict(sent_file):
+   
+   #afinnfile=open(sys.argv[1])
+   scores = {} # initialize an empty dictionary
+
+   for line in sent_file:#afinnfile:
+     term, score  = line.split("\t")
+     scores[term] = int(score)  
+
+   return scores
+
+#print statement used for debugging
+def state_print_debug(key, state):
+    print "AVERAGES:"
+    print "----"
+    print key
+    print state.count
+    print state.sum
+    print state.aveHap
+    print "----"
 
 
 
@@ -190,49 +203,6 @@ def get_sent_score(word):
 
 
 
-
-
-
-
-
-def comeonnow(filepass):
-    s = open(filepass,'r').readline()
-    # s=unicode_string.encode(s)
-    myobj=(json.loads(s))
-    print len(myobj)
-   # print len(myobj(['user:'])
-   # pprint.pprint(myobj['user'])
-    pprint.pprint(myobj)
-    
-
-    s = open(filepass,'r').readline()
-    # s=unicode_string.encode(s)
-    myobj=(json.loads(s))
-    print len(myobj)
-    print len(myobj['user'])
-   # pprint.pprint(myobj['user'])
-    pprint.pprint(myobj)
-
-
-
-
-
-
-def loads_invalid_obj_list(filepass):
-
-    s = open(filepass, 'r').readline()
-    #s=filepass.readline()
-    # s=unicode_string.encode(s)
-    decoder = JSONDecoder()
-    s_len = len(s)
-    print(len(s))
-    objs = []
-    end = 0
-    while end != s_len:
-        obj, end = decoder.raw_decode(s, idx=end)
-        objs.append(obj)
-        #print (decoder.raw_decode(s,indx=end))
-    return objs
    
   
 
